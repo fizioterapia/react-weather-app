@@ -1,17 +1,18 @@
 import { useState } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import WeatherData from "./components/WeatherData";
+import ErrorBox from "./components/ErrorBox";
+import Loader from "./components/Loader";
 
-import Button from "./components/Button";
-import Container from "./components/Container";
-import Icon from "./components/Icon";
-import InputBox from "./components/InputBox";
-import InputContainer from "./components/InputContainer";
-import InvalidContainer from "./components/InvalidContainer";
-import InvalidField from "./components/InvalidField";
-import WeatherContainer from "./components/WeatherContainer";
-import WeatherDescription from "./components/WeatherDescription";
-import WeatherField from "./components/WeatherField";
+import Container from "@mui/material/Container";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+
+import Theme from "./theme/Theme";
 
 import callAPI from "./services/openWeatherAPI";
 
@@ -19,6 +20,7 @@ function App() {
   const [city, setCity] = useState("");
   const [error, setError] = useState("");
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   function handleKeyDown(e) {
     if (e.key === "Enter") {
@@ -26,11 +28,8 @@ function App() {
     }
   }
 
-  function getIcon(weatherIcon) {
-    return `https://openweathermap.org/img/wn/${weatherIcon}@4x.png`;
-  }
-
   async function fetchData() {
+    setLoading(true);
     try {
       const response = await callAPI(city);
 
@@ -39,61 +38,70 @@ function App() {
       }
       const data = await response.json();
       setData(data);
+      setLoading(false);
     } catch (err) {
+      setData(null);
       setError(
         "Error has occured while loading data. Check your console for more information."
       );
+      setLoading(false);
     }
   }
 
-  function unixToTime(timestamp) {
-    const dateObject = new Date(timestamp * 1000);
-
-    return dateObject.toLocaleTimeString("pl-PL");
-  }
-
   return (
-    <Container className="App">
-      <InputContainer>
-        <h1>Weather</h1>
-        <InputBox
-          placeholder="Enter a city"
-          onChange={(e) => setCity(event.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <Button onClick={fetchData}>Submit</Button>
-      </InputContainer>
-      {data ? (
-        <WeatherContainer>
-          <h2>{data.name} </h2>
-          <Icon src={getIcon(data.weather[0].icon)} />
-          <h3>{data.weather[0].main}</h3>
-          <WeatherDescription>{data.weather[0].description}</WeatherDescription>
-          <WeatherField>
-            <FontAwesomeIcon icon="fa-solid fa-temperature-full" />{" "}
-            {data.main.temp}&#8451; ({data.main.feels_like}&#8451;)
-          </WeatherField>
-          <WeatherField>
-            <FontAwesomeIcon icon="fa-solid fa-wind" /> {data.wind.speed} m/s{" "}
-          </WeatherField>
-          <WeatherField>
-            <FontAwesomeIcon icon="fa-solid fa-sun" />{" "}
-            {unixToTime(data.sys.sunrise)}
-          </WeatherField>
-          <WeatherField>
-            <FontAwesomeIcon icon="fa-solid fa-moon" />{" "}
-            {unixToTime(data.sys.sunset)}{" "}
-          </WeatherField>
-        </WeatherContainer>
-      ) : (
-        <InvalidContainer>
-          <InvalidField>
-            <FontAwesomeIcon icon="fa-solid fa-face-sad-tear" />
-            {error ? error : "Provide valid city."}
-          </InvalidField>
-        </InvalidContainer>
-      )}
-    </Container>
+    <ThemeProvider theme={Theme}>
+      <Container
+        className="App"
+        maxWidth="sm"
+        sx={{ height: "100vh", textAlign: "center" }}
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ height: "100vh", width: "100%" }}
+        >
+          <Card variant="outlined" sx={{ padding: 4, marginBottom: 2 }}>
+            <Typography variant="h4" sx={{ marginBottom: 2, fontWeight: 500 }}>
+              Weather
+            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap="1em"
+            >
+              <TextField
+                label="City"
+                placeholder="Enter a city"
+                onChange={(e) => setCity(e.target.value)}
+                onKeyDown={handleKeyDown}
+                size="small"
+              />
+              <Button variant="contained" onClick={fetchData} size="medium">
+                Find
+              </Button>
+            </Box>
+          </Card>
+          <Box sx={{ minWidth: "70%" }}>
+            <Card variant="outlined" sx={{ padding: 4 }}>
+              {loading ? (
+                <Loader />
+              ) : data ? (
+                <WeatherData data={data} />
+              ) : error ? (
+                <ErrorBox data={error} />
+              ) : (
+                <Typography variant="body1">
+                  Enter a city to get started.
+                </Typography>
+              )}
+            </Card>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 }
 
