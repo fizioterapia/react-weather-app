@@ -25,7 +25,3 @@ $ npm run dev
 or
 $ yarn dev
 ```
-
-## Resources
-
-- Background photo by [Todd Trapani](https://unsplash.com/it/@ttrapani?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/photos/6vXQrXVFXjI?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
