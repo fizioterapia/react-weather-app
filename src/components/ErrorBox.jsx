@@ -1,5 +1,5 @@
-import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Typography } from "@mui/material";
 
 function ErrorBox({ data }) {
   return (
