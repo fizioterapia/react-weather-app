@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import WeatherData from "./components/WeatherData";
-import ErrorBox from "./components/ErrorBox";
-import Loader from "./components/Loader";
+import WeatherData from "../components/WeatherData";
+import ErrorBox from "../components/ErrorBox";
+import Loader from "../components/Loader";
 
 import Container from "@mui/material/Container";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -12,9 +12,9 @@ import TextField from "@mui/material/TextField";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 
-import Theme from "./theme/Theme";
+import Theme from "../theme/Theme";
 
-import callAPI from "./services/openWeatherAPI";
+import callAPI from "../utils/openWeatherAPI";
 
 function App() {
   const [city, setCity] = useState("");
